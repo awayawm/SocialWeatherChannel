@@ -47,6 +47,9 @@ public class Downloader {
             for (ImageResults.Items item : imageResults.getItems()) {
                 if (item.getImage().getWidth() >= Integer.valueOf(config.getMinImageSize())) {
                     String filename = item.getLink().substring(item.getLink().lastIndexOf("/")+1, item.getLink().lastIndexOf("."));
+                    filename = filename.replace(".", "")
+                            .replace("|", "")
+                            .replace("/", "");
                     String filepath = config.getMediaDirectory() + File.separator + cityStateCleaned + File.separator + filename;
                     logger.info(item.toString());
                     // check if dir exist

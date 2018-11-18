@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -22,6 +23,7 @@ public class CaspSocket {
     private String caspAddress = null;
     private int caspPort = -1;
     private boolean connected = false;
+    private Logger logger = Logger.getLogger(getClass().getSimpleName());
 
     public CaspSocket(String caspAddress, int caspPort) throws IOException {
         this.caspAddress = caspAddress;
@@ -57,41 +59,13 @@ public class CaspSocket {
         open(); // connect if not already
         out.println(new String(cmd.getCmdString().getBytes("UTF-8"))); // send command through socket
         long requestTime = new Date().getTime();
-
         String line = in.readLine();
         Matcher myMatcher = Pattern.compile("^\\d+").matcher(line);
-        myMatcher.find();
-        int status = Integer.parseInt(line.substring(myMatcher.start(), myMatcher.end()));
-
-        Pattern endSequence = null;
-        String response = null;
-        Boolean getResponse = true;
-        int charsRemove = 0;
-
-        if (status == 200) { // several lines followed by empty line
-            endSequence = Pattern.compile("\\r\\n\\r\\n$");
-            charsRemove = 4;
+        boolean findSuccess = myMatcher.find();
+        int status = -1;
+        if (findSuccess) {
+            status = Integer.parseInt(line.substring(myMatcher.start(), myMatcher.end()));
         }
-        else if (status == 201) { // one line of data returned
-            endSequence = Pattern.compile("\\r\\n$");
-            charsRemove = 2;
-        }
-        else {
-            getResponse = false;
-        }
-
-        if (getResponse) {
-            response = "";
-            while(true) {
-                char character = (char) in.read();
-                response += character;
-                if (endSequence.matcher(response).find()) { // if matched end sequence
-                    break;
-                }
-            }
-            response = response.substring(0, response.length()-charsRemove);
-        }
-
-        return new CaspReturn(status, response, requestTime);
+        return new CaspReturn(status, line, requestTime);
     }
 }

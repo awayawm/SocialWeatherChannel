@@ -28,7 +28,8 @@ public class Songs {
         songs = new ArrayList<>(Arrays.asList(
                 new Song("around_the_world", 1000L*454),
                 new Song("lady", 1000L*226),
-                new Song("put_em_high", 1000L*228)));
+                new Song("put_em_high", 1000L*228),
+                new Song("pjanoo", 1000L*193)));
     }
 
     public List<Song> getSongs() {

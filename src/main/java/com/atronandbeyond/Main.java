@@ -2,6 +2,7 @@ package com.atronandbeyond;
 
 import org.apache.commons.lang3.time.StopWatch;
 import tjenkinson.caspar_serverconnection.commands.CaspCmd;
+import tjenkinson.caspar_serverconnection.commands.CaspReturn;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -47,13 +48,15 @@ public class Main {
 
     private void startLoop() {
         CaspSocket socket = null;
+        CaspReturn caspReturn = null;
         try {
             socket = new CaspSocket(config.getCasparAddr(), Integer.valueOf(config.getCasparPort()));
             boolean running = true;
             int imageCounter = 0;
             String city = nextCity();
             Songs.Song song = songs.getNext();
-            socket.runCmd(new CaspCmd("play 1-1 " + song.getFilename()));
+            caspReturn = socket.runCmd(new CaspCmd("play 1-1 " + song.getFilename()));
+            logger.info(caspReturn.getResponse());
             StopWatch cityStopWatch = new StopWatch();
             StopWatch songStopWatch = new StopWatch();
             songStopWatch.start();
@@ -64,7 +67,8 @@ public class Main {
                 if (songStopWatch.getTime() > song.getDuration()) {
                     song = songs.getNext();
                     logger.info("new song: " + song.getFilename());
-                    socket.runCmd(new CaspCmd("play 1-1 " + song.getFilename()));
+                    caspReturn = socket.runCmd(new CaspCmd("play 1-1 " + song.getFilename()));
+                    logger.info(caspReturn.getResponse());
                     songStopWatch.reset();
                     songStopWatch.start();
                 }
@@ -80,7 +84,9 @@ public class Main {
                     String image = cityImages.getImages().get(imageCounter % cityImages.getImages().size()).toString();
                     logger.info(image);
                     imageCounter++;
-                    socket.runCmd(new CaspCmd("play 1-2 " + getImageName(Paths.get(image)) + " mix 100 easeinsine"));
+                    caspReturn = socket.runCmd(new CaspCmd("play 1-2 " + getImageName(Paths.get(image)) + " mix 100 easeinsine"));
+                    logger.info(caspReturn.getResponse());
+
                     Thread.sleep(SLEEP_TIME);
                 } catch (InterruptedException e) {
                     logger.severe(e.getMessage());
