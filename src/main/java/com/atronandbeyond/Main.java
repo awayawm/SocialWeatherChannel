@@ -3,12 +3,12 @@ package com.atronandbeyond;
 import org.apache.commons.lang3.time.StopWatch;
 import tjenkinson.caspar_serverconnection.commands.CaspCmd;
 import tjenkinson.caspar_serverconnection.commands.CaspReturn;
+import tjenkinson.caspar_serverconnection.commands.CaspSocket;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Logger;
 
 public class Main {
@@ -35,7 +35,7 @@ public class Main {
         String city = cities.getNext();
         downloader.getImagesForCityState(city);
         cityImages = new CityImages(city);
-        geocache.getZipForCityState(city);
+//        geocache.getZipForCityState(city);
         return city;
     }
 
@@ -58,14 +58,10 @@ public class Main {
             socket = new CaspSocket(config.getCasparAddr(), Integer.valueOf(config.getCasparPort()));
             boolean running = true;
             int imageCounter = 0;
-
+            boolean cityNotification = true;
+            boolean songNotification = true;
             String city = nextCity();
-            socket.runCmd(new CaspCmd(Command.getCommand(Command.Cmd.CITY_STATE_TITLE,
-                    Arrays.asList(city.split(",")[0], city.split(",")[1]))));
-            Songs.Song song = songs.getNext();
-
-            caspReturn = socket.runCmd(new CaspCmd(Command.getCommand(Command.Cmd.SONG, Arrays.asList(song.getFilename()))));
-            logger.info(caspReturn.getResponse());
+            Songs.Song song = null;
 
             socket.runCmd(new CaspCmd(Command.getCommand(Command.Cmd.ABSTRACT_BACKGROUND, null)));
             socket.runCmd(new CaspCmd(Command.getCommand(Command.Cmd.ABSTRACT_BACKGROUND_MIXER_BLEND_OVERLAY, null)));
@@ -79,24 +75,6 @@ public class Main {
 
             while (running) {
 
-                if (songStopWatch.getTime() > song.getDuration()) {
-                    song = songs.getNext();
-                    logger.info("new song: " + song.getFilename());
-                    caspReturn = socket.runCmd(new CaspCmd(Command.getCommand(Command.Cmd.SONG, Arrays.asList(song.getFilename()))));
-                    logger.info(caspReturn.getResponse());
-                    songStopWatch.reset();
-                    songStopWatch.start();
-                }
-
-                if (cityStopWatch.getTime() > Long.valueOf(config.getCityStateTime())) {
-                    city = nextCity();
-                    logger.info("Current city: " + city);
-                    socket.runCmd(new CaspCmd(Command.getCommand(Command.Cmd.CITY_STATE_TITLE,
-                            Arrays.asList(city.split(",")[0], city.split(",")[1]))));
-                    cityStopWatch.reset();
-                    cityStopWatch.start();
-                }
-
                 try {
                     String image = cityImages.getImages().get(imageCounter % cityImages.getImages().size()).toString();
                     logger.info(image);
@@ -104,11 +82,44 @@ public class Main {
                     caspReturn = socket.runCmd(new CaspCmd(Command.getCommand(Command.Cmd.IMAGE, Arrays.asList(getImageName(Paths.get(image))))));
                     logger.info(caspReturn.getResponse());
 
+                    if(cityNotification){
+                        socket.runCmd(new CaspCmd(Command.getCommand(Command.Cmd.CITY_STATE_TITLE,
+                                Arrays.asList(city.split(",")[0], city.split(",")[1]))));
+                        cityNotification = false;
+                    }
+
+                    if(songNotification){
+                        song = songs.getNext();
+                        logger.info("new song: " + song.getFilename());
+                        caspReturn = socket.runCmd(new CaspCmd(Command.getCommand(Command.Cmd.SONG, Arrays.asList(song.getFilename()))));
+                        logger.info(caspReturn.getResponse());
+                        socket.runCmd(new CaspCmd(Command.getCommand(Command.Cmd.MUSIC_TITLE,
+                                Arrays.asList(song.getArtist(), song.getSong(), song.getAlbum()))));
+                        songNotification = false;
+                    }
+
                     Thread.sleep(SLEEP_TIME);
                     socket.runCmd(new CaspCmd(Command.getCommand(Command.Cmd.CITY_STATE_STOP, null)));
+                    socket.runCmd(new CaspCmd(Command.getCommand(Command.Cmd.MUSIC_TITLE_STOP, null)));
                 } catch (InterruptedException e) {
                     logger.severe(e.getMessage());
                 }
+
+                if (songStopWatch.getTime() > song.getDuration()) {
+                    songNotification = true;
+                    songStopWatch.reset();
+                    songStopWatch.start();
+                }
+
+                if (cityStopWatch.getTime() > Long.valueOf(config.getCityStateTime())) {
+                    city = nextCity();
+                    logger.info("Current city: " + city);
+                    cityNotification = true;
+                    cityStopWatch.reset();
+                    cityStopWatch.start();
+                }
+
+
             }
 
             socket.close();

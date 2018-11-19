@@ -7,7 +7,7 @@ class Command{
         IMAGE, SONG, IMAGE_DESATURATE,
         ABSTRACT_BACKGROUND, ABSTRACT_BACKGROUND_MIXER_BLEND_OVERLAY,
         ABSTRACT_BACKGROUND_MIXER_HALF_OPACITY, CITY_STATE_TITLE,
-        CITY_STATE_STOP,
+        CITY_STATE_STOP, MUSIC_TITLE, MUSIC_TITLE_STOP;
     }
     static String getCommand(Cmd command, List<String> args){
         String result = "";
@@ -35,6 +35,9 @@ class Command{
                 break;
             case CITY_STATE_STOP:
                 result = "cg 1 stop 2";
+                break;
+            case MUSIC_TITLE:
+                result = "cg 1 add 3 MUSIC_TITLE/INDEX 1 \"{\\\"album\\\":\\\"" + args.get(1) + "\\\",\\\"artist\\\":\\\"" + args.get(0) + "\\\",\\\"song\\\":\\\"" + args.get(1) + "\\\"}\"";
                 break;
         }
         return result;

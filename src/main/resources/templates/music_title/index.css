@@ -1,0 +1,41 @@
+html{
+    width: 1280px;
+    height: 720px;
+}
+
+#background{
+    opacity: 0;
+    width: 508px;
+    height: 156px;
+    position: absolute;
+    background:url("background.svg");
+    left:753px;
+    top:500px;
+}
+
+#artist{
+    text-align: left;
+    position: relative;
+    color: azure;
+    left: 65px;
+    font-size: 2.2em;
+    top:45px;
+}
+
+#song{
+    text-align: left;
+    top:50px;
+    left: 65px;
+    position: relative;
+    color: azure;
+    font-size: 1.4em;
+}
+
+#album{
+    text-align: left;
+    top:50px;
+    left: 65px;
+    position: relative;
+    color: azure;
+    font-size: 1.2em;
+}
