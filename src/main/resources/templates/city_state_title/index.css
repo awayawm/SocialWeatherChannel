@@ -1,0 +1,33 @@
+html{
+    width: 1280px;
+    height: 720px;
+}
+body{
+    text-align: center;
+}
+
+#city_state{
+    opacity: 0;
+    width: 625px;
+    height: 125px;
+    position: absolute;
+    background:url("city_state_title.svg");
+    left:335px;
+    top:550px;
+}
+
+#background_text{
+    text-align: center;
+    position: relative;
+    color: azure;
+    font-size: 2.2em;
+    top:45px;
+}
+
+#background_subtext{
+    text-align: center;
+    top:50px;
+    position: relative;
+    color: azure;
+    font-size: 1.8em;
+}
