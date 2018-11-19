@@ -50,4 +50,12 @@ class Config {
     String getCasparPort(){
         return properties.getProperty("caspPort");
     }
+
+    String getFactTime(){
+        return properties.getProperty("fact_time");
+    }
+
+    String getImageTime(){
+        return properties.getProperty("image_time");
+    }
 }

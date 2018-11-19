@@ -12,7 +12,7 @@ class Cities {
 
     Cities(){
         images = new ArrayList<>();
-        cities = new ArrayList<>(Arrays.asList("Columbia, Missouri", "Kansas City, Missouri",
+        cities = new ArrayList<>(Arrays.asList("Columbia, Missouri", "Springfield, Missouri", "Kansas City, Missouri",
                 "Saint Louis, Missouri", "Jefferson City, Missouri"));
     }
 

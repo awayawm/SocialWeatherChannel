@@ -1,3 +1,4 @@
+//TODO get image extentions in a better way
 package com.atronandbeyond;
 
 import com.atronandbeyond.domains.ImageResults;
@@ -13,6 +14,7 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.logging.Logger;
@@ -45,13 +47,20 @@ public class Downloader {
             String json = response.body().string();
             ImageResults imageResults = gson.fromJson(json, ImageResults.class);
             for (ImageResults.Items item : imageResults.getItems()) {
-                if (item.getImage().getWidth() >= Integer.valueOf(config.getMinImageSize())) {
-                    String filename = item.getLink().substring(item.getLink().lastIndexOf("/")+1, item.getLink().lastIndexOf("."));
-                    filename = filename.replace(".", "")
-                            .replace("|", "")
-                            .replace("/", "");
+                if (item.getImage().getHeight() >= Integer.valueOf(config.getMinImageSize())) {
+//                    String filename = item.getLink().substring(item.getLink().lastIndexOf("/")+1, item.getLink().lastIndexOf("."));
+//                    filename = filename.replace(".", "")
+//                            .replace("|", "")
+//                            .replace("/", "");
+                    String filename = item.getLink().substring(item.getLink().lastIndexOf("/")+1);
+                    int locationOfQuestionMark = filename.indexOf("?");
+                    if (locationOfQuestionMark != -1) {
+                        filename = filename.substring(0, filename.indexOf("?"));
+                    }
+                    logger.info("filename: " + filename);
                     String filepath = config.getMediaDirectory() + File.separator + cityStateCleaned + File.separator + filename;
-                    logger.info(item.toString());
+                    logger.info(filename);
+
                     // check if dir exist
                     logger.info("filename: " + filename);
                     if (!Files.exists(Paths.get(config.getMediaDirectory() + File.separator + cityStateCleaned))) {
