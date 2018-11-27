@@ -42,9 +42,11 @@ public class Downloader {
                 .append(cityStateCleaned);
         Request request = new Request.Builder()
                 .url(sb.toString())
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36")
                 .build();
         try (Response response = okHttpClient.newCall(request).execute()) {
             String json = response.body().string();
+//            logger.info("image response: " + json);
             ImageResults imageResults = gson.fromJson(json, ImageResults.class);
             for (ImageResults.Items item : imageResults.getItems()) {
                 if (item.getImage().getHeight() >= Integer.valueOf(config.getMinImageSize())) {
@@ -79,6 +81,7 @@ public class Downloader {
             logger.info(imageResults.getItems().toString());
         } catch (IOException e) {
             logger.severe(e.getMessage());
+            logger.severe(e.toString());
         }
         return null;
     }

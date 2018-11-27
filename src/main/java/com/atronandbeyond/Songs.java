@@ -53,7 +53,7 @@ public class Songs {
                 new Song("put_em_high", 1000L*228,"StoneBridge", "Put 'Em High", "Can't Get Enough"),
                 new Song("pjanoo", 1000L*193, "Eric Prydz","Pjanoo", "Eric Prydz Presents Pryda"),
                 new Song("stardust", 1000L*420, "Stardust", "Music Sounds Better with You", "Stardust"),
-                new Song("blue_song", 1000L*293,"Eiffel 65","Blue (Da Ba Dee)", "Europop"),
+//                new Song("blue_song", 1000L*293,"Eiffel 65","Blue (Da Ba Dee)", "Europop"),
                 new Song("kylie", 1000L*245, "Kylie Minogue","Love at First Sight", "Fever")));
     }
 

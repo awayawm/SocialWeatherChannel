@@ -21,7 +21,7 @@ class Command{
                 break;
             case IMAGE:
                 String song = args.get(0);
-                result = "play 1-2 " + song.substring(0, song.lastIndexOf(".")) + " mix 100 easeinsine";
+                result = "play 1-2 " + song.substring(0, song.lastIndexOf(".") != -1 ? song.lastIndexOf(".") : song.length()) + " mix 100 easeinsine";
                 break;
             case IMAGE_DESATURATE:
                 result = "mixer 1-2 saturation .5";
@@ -36,23 +36,23 @@ class Command{
                 result = "mixer 1-3 opacity .33";
                 break;
             case CITY_STATE_TITLE:
-                result = "cg 1 add 2 CITY_STATE_TITLE/INDEX 1 \"{\\\"city\\\":\\\"" + args.get(0) + "\\\",\\\"state\\\":\\\"" + args.get(1) + "\\\"}\"";
+                result = "cg 1 add 4 CITY_STATE_TITLE/INDEX 1 \"{\\\"city\\\":\\\"" + args.get(0) + "\\\",\\\"state\\\":\\\"" + args.get(1) + "\\\"}\"";
                 break;
             case CITY_STATE_STOP:
-                result = "cg 1 stop 2";
+                result = "cg 1 stop 4";
                 break;
             case MUSIC_TITLE:
-                result = "cg 1 add 3 MUSIC_TITLE/INDEX 1 \"{\\\"album\\\":\\\"" + args.get(1) + "\\\",\\\"artist\\\":\\\"" + args.get(0) + "\\\",\\\"song\\\":\\\"" + args.get(1) + "\\\"}\"";
+                result = "cg 1 add 5 MUSIC_TITLE/INDEX 1 \"{\\\"album\\\":\\\"" + args.get(1) + "\\\",\\\"artist\\\":\\\"" + args.get(0) + "\\\",\\\"song\\\":\\\"" + args.get(1) + "\\\"}\"";
                 break;
             case MUSIC_TITLE_STOP:
-                result = "cg 1 stop 3";
+                result = "cg 1 stop 5";
                 break;
             case FACT_TITLE:
-                result = "cg 1 add 3 FACT_TITLE/INDEX 1 \"{\\\"heading\\\":\\\"" + args.get(0) + "\\\",\\\"fact\\\":\\\"" + args.get(1) + "\\\"}\"";
+                result = "cg 1 add 6 FACT_TITLE/INDEX 1 \"{\\\"heading\\\":\\\"" + args.get(0) + "\\\",\\\"fact\\\":\\\"" + args.get(1) + "\\\"}\"";
 //                logger.info("fact command: " + result);
                 break;
             case FACT_TITLE_STOP:
-                result = "cg 1 stop 3";
+                result = "cg 1 stop 6";
                 break;
         }
         return result;

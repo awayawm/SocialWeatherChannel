@@ -65,10 +65,13 @@ public class Main {
             boolean cityNotification = false;
             boolean songNotification = false;
             boolean factNotication = false;
-            boolean changeImage = false;
+            boolean changeImage = true;
 
             String city = nextCity();
+            socket.runCmd(new CaspCmd(Command.getCommand(Command.Cmd.CITY_STATE_TITLE,
+                    Arrays.asList(city.split(",")[0], city.split(",")[1]))));
             Songs.Song song = songs.getNext();
+            socket.runCmd(new CaspCmd(Command.getCommand(Command.Cmd.SONG, Arrays.asList(song.getFilename()))));
 
             socket.runCmd(new CaspCmd(Command.getCommand(Command.Cmd.ABSTRACT_BACKGROUND, null)));
             socket.runCmd(new CaspCmd(Command.getCommand(Command.Cmd.ABSTRACT_BACKGROUND_MIXER_BLEND_OVERLAY, null)));
@@ -88,16 +91,6 @@ public class Main {
 
                 try {
 
-                    if (changeImage) {
-                        String image = cityImages.getImages().get(imageCounter++ % cityImages.getImages().size()).toString();
-                        logger.info("image: " + image);
-                        String casparCommand = Command.getCommand(Command.Cmd.IMAGE, Arrays.asList(getImageName(Paths.get(image))));
-                        caspReturn = socket.runCmd(new CaspCmd(casparCommand));
-                        logger.info("caspar image command: " + casparCommand);
-                        logger.info("caspar image return: " + caspReturn.getResponse());
-                        changeImage = false;
-                    }
-
                     if (factNotication) {
                         cityFacts = new CityFacts(city);
                         if (cityFacts.getNumFacts() != 0) {
@@ -114,13 +107,6 @@ public class Main {
                         factNotication = false;
                     }
 
-                    if(cityNotification){
-                        socket.runCmd(new CaspCmd(Command.getCommand(Command.Cmd.CITY_STATE_TITLE,
-                                Arrays.asList(city.split(",")[0], city.split(",")[1]))));
-                        city = nextCity();
-                        cityNotification = false;
-                    }
-
                     if(songNotification){
                         song = songs.getNext();
 //                        logger.info("new song: " + song.getFilename());
@@ -129,6 +115,31 @@ public class Main {
                         socket.runCmd(new CaspCmd(Command.getCommand(Command.Cmd.MUSIC_TITLE,
                                 Arrays.asList(song.getArtist(), song.getSong(), song.getAlbum()))));
                         songNotification = false;
+                    }
+
+                    if(cityNotification){
+                        city = nextCity();
+                        logger.info("Current city: " + city);
+                        socket.runCmd(new CaspCmd(Command.getCommand(Command.Cmd.CITY_STATE_TITLE,
+                                Arrays.asList(city.split(",")[0], city.split(",")[1]))));
+                        cityNotification = false;
+                    }
+
+                    if (changeImage) {
+                        if(cityNotification){
+                            city = nextCity();
+                            logger.info("Current city: " + city);
+                            socket.runCmd(new CaspCmd(Command.getCommand(Command.Cmd.CITY_STATE_TITLE,
+                                    Arrays.asList(city.split(",")[0], city.split(",")[1]))));
+                            cityNotification = false;
+                        }
+                        String image = cityImages.getImages().get(imageCounter++ % cityImages.getImages().size()).toString();
+                        logger.info("image: " + image);
+                        String casparCommand = Command.getCommand(Command.Cmd.IMAGE, Arrays.asList(getImageName(Paths.get(image))));
+                        caspReturn = socket.runCmd(new CaspCmd(casparCommand));
+                        logger.info("caspar image command: " + casparCommand);
+                        logger.info("caspar image return: " + caspReturn.getResponse());
+                        changeImage = false;
                     }
 
                     Thread.sleep(SLEEP_TIME);
@@ -147,7 +158,6 @@ public class Main {
                 }
 
                 if (cityStopWatch.getTime() > Long.valueOf(config.getCityStateTime())) {
-                    logger.info("Current city: " + city);
                     cityNotification = true;
                     cityStopWatch.reset();
                     cityStopWatch.start();

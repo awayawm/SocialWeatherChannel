@@ -30,13 +30,15 @@ public class CityFacts {
     }
 
     private void collectFacts() {
-        logger.info("Collecting facts for " + cityState);
+//        logger.info("Collecting facts for " + cityState);
         String cityStateCleaned = cityState.replace(" ", "+");
         StringBuilder sb = new StringBuilder()
-                .append("https://en.wikipedia.org/w/api.php?action=opensearch&search=")
+                .append("https://en.wikipedia.org/w/api.php?")
+                .append("action=opensearch&")
+                .append("search=")
                 .append(cityStateCleaned)
                 .append("&limit=100&namespace=0&format=json");
-
+        logger.info(sb.toString());
         Request request = new Request.Builder()
                 .url(sb.toString())
                 .build();
